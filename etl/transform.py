@@ -5,12 +5,20 @@ Làm sạch và chuẩn hóa dữ liệu thô:
 - Phân tích ngày giờ
 Output: data_processed/
 """
-
+# khai báo thư viện
 import numpy as np
 import pandas as pd
+from logger_untils import  get_logger
+from pandas import DataFrame
+from pathlib import Path
+
+
+
+logger = get_logger("transform")
+
 
 # xử lý cột loại hình đất
-def loai_hinh_dat(data):
+def loai_hinh_dat(data : DataFrame) -> DataFrame:
     """
     Chuẩn hoá cột 'Loại hình đất' trong DataFrame bất động sản.
 
@@ -80,7 +88,7 @@ def loai_hinh_dat(data):
     return data
 
 # xử lý cột diện tích
-def dien_tich(data):
+def dien_tich(data : DataFrame) -> DataFrame:
     """
         Chuẩn hoá cột 'Diện tích' trong DataFrame bất động sản.
 
@@ -113,7 +121,7 @@ def dien_tich(data):
 
 
 # xử lý cột mức giá
-def muc_gia(data):
+def muc_gia(data : DataFrame) -> DataFrame:
     """
         Chuẩn hoá cột 'Mức giá' trong DataFrame bất động sản.
 
@@ -148,7 +156,7 @@ def muc_gia(data):
     return data
 
 # xử lý cột số phòng ngủ
-def so_phong_ngu(data):
+def so_phong_ngu(data : DataFrame) -> DataFrame:
     """
         Chuẩn hoá cột "Số phòng ngủ" trong DataFrame bất động sản.
 
@@ -178,7 +186,7 @@ def so_phong_ngu(data):
     return data
 
 # xử lý cột số phòng tắm, vệ sinh
-def so_phong_tam(data):
+def so_phong_tam(data : DataFrame ) -> DataFrame:
     """
     Chuẩn hoá cột 'Số phòng tắm, vệ sinh' trong DataFrame bất động sản.
 
@@ -211,7 +219,7 @@ def so_phong_tam(data):
     return data
 
 # xử lý cột số tầng
-def so_tang(data):
+def so_tang(data : DataFrame) -> DataFrame:
     """
     Chuẩn hoá cột 'Số tầng' trong DataFrame bất động sản.
 
@@ -244,7 +252,7 @@ def so_tang(data):
     return data
 
 # xử lý cột mặt tiền
-def mat_tien(data):
+def mat_tien(data : DataFrame) -> DataFrame:
     """
     Chuẩn hoá cột 'Mặt tiền' trong DataFrame bất động sản.
 
@@ -273,7 +281,7 @@ def mat_tien(data):
     return data
 
 # xử lý cột đường vào
-def duong_vao(data):
+def duong_vao(data : DataFrame) -> DataFrame:
     """
     Chuẩn hoá cột 'Đường vào' trong DataFrame bất động sản.
 
@@ -302,7 +310,7 @@ def duong_vao(data):
     return data
 
 # xử lý cột ngày đăng
-def ngay_dang(data):
+def ngay_dang(data : DataFrame) -> DataFrame:
     """
     Chuẩn hoá cột 'Ngày đăng' trong DataFrame bất động sản.
 
@@ -332,5 +340,207 @@ def ngay_dang(data):
     )
 
     return data
+
+# hàm xử lý cột ngày lấy dữ liệu
+def crawl_date(data : DataFrame) -> DataFrame :
+    """
+    Chuẩn hóa cột "craw_date" trong dataframe bất động sản.
+
+    Hàm chuyển các giá trị ngày lấy dữ liệu ( 2025-08-07 ) về định dạng datetime64
+    các giá trị không hợp lệ thì gá giá trị NAN.
+    :param data:
+    ------------
+    data : pandas.DataFrame
+    :return:
+    ----------
+    pandas.DataFrame
+    """
+    data["crawl_date"] = pd.to_datetime(
+        data["crawl_date"],
+        errors="coerce"
+
+    )
+    return data
+
+# hàm xóa các bản ghi giống nhau hoàn toàn
+def xoa_trung_lap(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Loại bỏ các bản ghi trùng nhau hoàn toàn trong DataFrame.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame sau khi đã loại bỏ các dòng trùng.
+    """
+    truoc = len(data)
+    data = data.drop_duplicates()
+    sau = len(data)
+    logger.info(f"so ban ghi da xoa : {truoc - sau}")
+    return data
+
+# hàm xóa bản ghi trùng theo cột chỉ định
+def xoa_trung_lap_theo_cot(
+    data: pd.DataFrame,
+    subset: list[str],
+    keep: str = "first"
+) -> pd.DataFrame:
+    """
+    Loại bỏ các bản ghi trùng nhau theo các cột chỉ định.
+
+    Parameters
+    ----------
+    subset : list[str]
+        Danh sách cột dùng để kiểm tra trùng lặp.
+    keep : {"first", "last", False}
+        Giữ bản ghi nào.
+
+    Returns
+    -------
+    pd.DataFrame
+    """
+    return data.drop_duplicates(subset=subset, keep=keep)
+
+
+# hàm transfomer dữ liệu
+# def transfomer(data : DataFrame) -> DataFrame:
+#     data = pd.read_csv("../data_raw/gia_nha.csv")
+#     logger.info("Start transfomer data ...")
+#     logger.info(f"data shape : {data.shape}")
+#     logger.info(f"start clean land type")
+#     try :
+#         data = loai_hinh_dat(data)
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean land type")
+#     logger.info(f"start clean acreage")
+#     try :
+#         data = dien_tich(data)
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean acreage")
+#     logger.info(f"start clean price level")
+#     try :
+#         data = muc_gia(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean price level")
+#     logger.info(f"start clean number of bedrooms")
+#     try :
+#         data = so_phong_ngu(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean number of bedrooms")
+#     logger.info(f"start clean number of floors")
+#     try :
+#         data = so_tang(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean number of bedrooms")
+#     logger.info(f"start clean number of bathrooms")
+#     try :
+#         data = so_phong_tam(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info("end clean number of bathrooms")
+#     logger.info(f"start clean facade")
+#     try :
+#         data = mat_tien(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean facade")
+#     logger.info(f"start clean entrance")
+#     try :
+#         data = duong_vao(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean entranceed")
+#     logger.info(f"start clean posting date")
+#     try :
+#         data = ngay_dang(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean posting date")
+#     logger.info(f"start clean crawl_date ")
+#     try :
+#         data = crawl_date(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end clean crawl_date")
+#     logger.info(f"start remove duplicates")
+#     try :
+#         data = xoa_trung_lap(
+#             data
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end remove duplicates")
+#     logger.info(f"start remove duplicates by column")
+#     try :
+#         data = xoa_trung_lap_theo_cot(
+#             data ,
+#             subset = ["Loại giao dịch", "Thành phố", "Quận/huyện", "Loại hình đất",
+#                       "Mức giá", "Diện tích", "Số phòng ngủ", "Số phòng tắm, vệ sinh",
+#                       "Số tầng", "Hướng nhà", "Hướng ban công", "Mặt tiền", "Đường vào",
+#                       "Pháp lý", "Nội thất", "Ngày đăng"],
+#             keep = "first"
+#         )
+#     except Exception as e :
+#         logger.error(f"error : {e}")
+#     logger.info(f"end remove duplicates")
+
+
+# hàm transfomer dữ liệu
+
+def transformer(data: DataFrame) -> DataFrame:
+    logger.info("Start transformer data ...")
+    logger.info(f"Initial shape: {data.shape}")
+
+    try:
+        data = loai_hinh_dat(data)
+        data = dien_tich(data)
+        data = muc_gia(data)
+        data = so_phong_ngu(data)
+        data = so_tang(data)
+        data = so_phong_tam(data)
+        data = mat_tien(data)
+        data = duong_vao(data)
+        data = ngay_dang(data)
+        data = crawl_date(data)
+
+        data = xoa_trung_lap(data)
+        data = xoa_trung_lap_theo_cot(
+            data,
+            subset=[
+                "Loại giao dịch", "Thành phố", "Quận/huyện", "Loại hình đất",
+                "Mức giá", "Diện tích", "Số phòng ngủ", "Số phòng tắm, vệ sinh",
+                "Số tầng", "Hướng nhà", "Hướng ban công", "Mặt tiền",
+                "Đường vào", "Pháp lý", "Nội thất", "Ngày đăng"
+            ],
+            keep="first"
+        )
+
+    except Exception as e:
+        logger.exception(f"Transformer failed: {e}")
+
+    logger.info(f"Final shape: {data.shape}")
+
+    return data
+
 
 

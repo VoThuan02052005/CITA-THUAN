@@ -56,12 +56,12 @@ Web / API
 
 ## 🔄 Data Pipeline Architecture
 
-The pipeline includes the following stages:
+Quy trình này bao gồm các giai đoạn sau: 
 
 1. **Data Ingestion**
 
-   * Crawl house listing data using Selenium & BeautifulSoup
-   * Extract attributes such as:
+   * thu thập dữ liệu giá nhà bằng Selenium & BeautifulSoup
+   * trích xuất các thuộc tính như:
 
      * Location
      * Area (m²)
@@ -71,14 +71,14 @@ The pipeline includes the following stages:
 
 2. **Data Cleaning & Validation**
 
-   * Remove duplicate listings
-   * Handle missing or invalid values
-   * Standardize price and area units
+   * Xóa dữ liệu trùng lặp.
+   * xử lý các giá trị bị thiếu hoặc không hợp lệ.
+   * Chuẩn hóa đơn vị giá cả và diện tích.
 
 3. **Data Storage**
 
-   * Store cleaned data in CSV files and SQLite database
-   * Ensure data consistency for further analysis
+   * Lưu trữ dữ liệu đã làm sạch vào các tệp CSV và cơ sở dữ liệu SQLite.
+   * Đảm bảo tính nhất quán của dữ liệu để phục vụ cho việc phân tích tiếp theo.
 
 4. **Feature Engineering**
 
@@ -108,21 +108,23 @@ The pipeline includes the following stages:
 
 ```
 real-estate-data-pipeline/
-│── data/
-│   ├── raw/               # Raw crawled data
-│   ├── cleaned/           # Cleaned datasets
+│── data_raw/
+│   ├── raw/       
+│   ├── cleaned/       
 │
-│── ingestion/
-│   ├── crawl_real_estate.py
+│── etl/
+│   ├── extract.py 
+│   ├── transfomer.py 
+│   ├── load.py 
 │
-│── processing/
+│── data_processed/
 │   ├── clean_data.py
 │   ├── feature_engineering.py
 │
-│── storage/
+│── warehouse 
 │   ├── database.db
 │
-│── model/
+│── ml/
 │   ├── train_model.py
 │
 │── main.py                # Run full pipeline

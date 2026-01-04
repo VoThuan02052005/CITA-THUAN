@@ -1,5 +1,5 @@
 config.yaml
-gia_nha.csv
-du_lieu_chuan_hoa.csv
+data_raw/gia_nha.csv
 data_clean.ipynb
 .idea
+urls.db
