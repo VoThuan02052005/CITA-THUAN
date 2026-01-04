@@ -8,13 +8,13 @@ Output: data_processed/
 # khai báo thư viện
 import numpy as np
 import pandas as pd
-from logger_untils import  get_logger
+from etl.logger_utils import  setup_logger
 from pandas import DataFrame
 from pathlib import Path
 
 
 
-logger = get_logger("transform")
+logger = setup_logger("transform")
 
 
 # xử lý cột loại hình đất
@@ -181,7 +181,7 @@ def so_phong_ngu(data : DataFrame) -> DataFrame:
         .str.replace("phòng", "")
         .str.strip()
         .pipe(pd.to_numeric, errors='coerce')
-        .astype("int64")
+        .astype("float")
     )
     return data
 
@@ -329,13 +329,14 @@ def ngay_dang(data : DataFrame) -> DataFrame:
     data["Ngày đăng"] = (
         data["Ngày đăng"]
         .astype(str)
+        .str.replace("/", "-")
         .str.strip()
         .replace({"nan": None})
     )
 
     data["Ngày đăng"] = pd.to_datetime(
         data["Ngày đăng"],
-        dayfirst=True,        # RẤT QUAN TRỌNG cho dữ liệu VN
+        dayfirst=True,
         errors="coerce"
     )
 
@@ -534,7 +535,6 @@ def transformer(data: DataFrame) -> DataFrame:
             ],
             keep="first"
         )
-
     except Exception as e:
         logger.exception(f"Transformer failed: {e}")
 

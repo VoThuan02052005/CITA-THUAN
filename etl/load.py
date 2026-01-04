@@ -3,14 +3,14 @@ Tải dữ liệu đã xử lý vào kho dữ liệu (PostgreSQL).
 """
 from pathlib import Path
 from pandas import DataFrame
-from logger_untils import get_logger
+from etl.logger_utils import setup_logger
 
-logger = get_logger("load")
+logger = setup_logger("load")
 
 
 def save_processed_data(
     data: DataFrame,
-    output_path: str = "../data_processed/gia_nha_processed.csv"
+    output_path: str = "data_processed/gia_nha_processed.csv"
 ):
     """
     Lưu dữ liệu đã xử lý ra file CSV.

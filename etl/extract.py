@@ -16,11 +16,11 @@ import sqlite3
 import yaml
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-from logger_untils import get_logger
+from etl.logger_utils import  setup_logger
 import pandas as pd
 
 
-logger = get_logger("extract")
+logger = setup_logger("extract")
 # ==== CONFIG ====
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CONFIG_PATH = os.path.join(BASE_DIR, "config.yaml")
