@@ -10,7 +10,7 @@ logger = setup_logger("load")
 
 def save_processed_data(
     data: DataFrame,
-    output_path: str = "data_processed/gia_nha_processed.csv"
+    output_path: str = "data_processed/gia_nha_chuan_hoa.csv"
 ):
     """
     Lưu dữ liệu đã xử lý ra file CSV.

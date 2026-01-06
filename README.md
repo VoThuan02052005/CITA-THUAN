@@ -131,6 +131,20 @@ real-estate-data-pipeline/
 │── requirements.txt
 │── README.md
 ```
+-----
+## Data Quality 
+
+* Để đảm bảo dữ liệu đầu vào đáng tin cậy cho việc dự đoán giá, các quy tắc chất lượng dữ liệu sau được áp dụng:
+* Giá nhà phải lớn hơn 0. 
+* Diện tích phải lớn hơn 0.
+* Giá trị vị trí (Quận/huyện , thành phố ) phải khác NULL. 
+* Các giá trị cột ngày thắng có type là datetime64 và ko có giá trị lớn hon ngày hiện tại . 
+* Xóa các giá trị trùng lặp.
+* Xóa các giá trị trùng lặp theo cột. 
+
+------
+
+
 
 
 

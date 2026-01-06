@@ -11,9 +11,9 @@ import pandas as pd
 from etl.logger_utils import  setup_logger
 from pandas import DataFrame
 from pathlib import Path
+import os
 
-
-
+PROCESSED_PATH =  "data_processed"
 logger = setup_logger("transform")
 
 
@@ -153,6 +153,8 @@ def muc_gia(data : DataFrame) -> DataFrame:
     )
 
     data["Đơn vị(Mức giá)"] = tmp["Don_vi"]
+
+
     return data
 
 # xử lý cột số phòng ngủ
@@ -401,117 +403,322 @@ def xoa_trung_lap_theo_cot(
     """
     return data.drop_duplicates(subset=subset, keep=keep)
 
+def validate_price(data: DataFrame) -> DataFrame:
 
-# hàm transfomer dữ liệu
-# def transfomer(data : DataFrame) -> DataFrame:
-#     data = pd.read_csv("../data_raw/gia_nha.csv")
-#     logger.info("Start transfomer data ...")
-#     logger.info(f"data shape : {data.shape}")
-#     logger.info(f"start clean land type")
-#     try :
-#         data = loai_hinh_dat(data)
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean land type")
-#     logger.info(f"start clean acreage")
-#     try :
-#         data = dien_tich(data)
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean acreage")
-#     logger.info(f"start clean price level")
-#     try :
-#         data = muc_gia(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean price level")
-#     logger.info(f"start clean number of bedrooms")
-#     try :
-#         data = so_phong_ngu(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean number of bedrooms")
-#     logger.info(f"start clean number of floors")
-#     try :
-#         data = so_tang(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean number of bedrooms")
-#     logger.info(f"start clean number of bathrooms")
-#     try :
-#         data = so_phong_tam(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info("end clean number of bathrooms")
-#     logger.info(f"start clean facade")
-#     try :
-#         data = mat_tien(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean facade")
-#     logger.info(f"start clean entrance")
-#     try :
-#         data = duong_vao(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean entranceed")
-#     logger.info(f"start clean posting date")
-#     try :
-#         data = ngay_dang(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean posting date")
-#     logger.info(f"start clean crawl_date ")
-#     try :
-#         data = crawl_date(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end clean crawl_date")
-#     logger.info(f"start remove duplicates")
-#     try :
-#         data = xoa_trung_lap(
-#             data
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end remove duplicates")
-#     logger.info(f"start remove duplicates by column")
-#     try :
-#         data = xoa_trung_lap_theo_cot(
-#             data ,
-#             subset = ["Loại giao dịch", "Thành phố", "Quận/huyện", "Loại hình đất",
-#                       "Mức giá", "Diện tích", "Số phòng ngủ", "Số phòng tắm, vệ sinh",
-#                       "Số tầng", "Hướng nhà", "Hướng ban công", "Mặt tiền", "Đường vào",
-#                       "Pháp lý", "Nội thất", "Ngày đăng"],
-#             keep = "first"
-#         )
-#     except Exception as e :
-#         logger.error(f"error : {e}")
-#     logger.info(f"end remove duplicates")
+    data = data[data["Giá"] > 0 ]
+    data = data.dropna(subset=["Giá"])
+    data = data.drop(columns=["Mức giá"])
 
+    return data
+def validate_area(data : DataFrame) -> DataFrame:
+
+    data = data[data["Diện tích"] > 0  ]
+    data = data.dropna(subset=["Diện tích"])
+
+    return data
+
+def validate_location(data : DataFrame) -> DataFrame:
+    data = data[
+        data["Thành phố"].notna() & data["Quận/huyện"].notna() ]
+    return data
+
+def build_dim_location(data: DataFrame) -> DataFrame:
+    """
+    Xây dựng bảng dimension location (dim_location) từ dữ liệu thô.
+
+    Mục đích:
+    - Loại bỏ các bản ghi trùng lặp
+    - Tạo khóa thay thế (surrogate key) cho bảng dim_location
+
+    Tham số:
+    ----------
+    data : DataFrame
+        DataFrame đầu vào chứa dữ liệu thô, bao gồm các cột:
+        - "Thành phố"
+        - "Quận/huyện"
+
+    Giá trị trả về:
+    ---------------
+    DataFrame
+        Bảng dim_location với các cột:
+        - location_id : int
+            Khóa chính (surrogate key) cho mỗi địa điểm
+        - city : str
+            Tên thành phố
+        - district : str
+            Tên quận/huyện
+    """
+    dim = (
+        data[["Thành phố", "Quận/huyện"]]
+        .rename(columns={
+            "Thành phố": "city",
+            "Quận/huyện": "district"
+        })
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+    dim["location_id"] = dim.index + 1
+    return dim
+def build_dim_property(data: DataFrame) -> DataFrame:
+    """
+    Xây dựng bảng dimention property (dim_property) từ dữ liệu thô.
+
+    Mục đích:
+      - loại bỏ các bản ghi trùng lặp.
+      - Tạo khóa thay thế (surrogate key) cho bảng dim_property
+
+    :param data :
+    ----------
+    data : DataFrame
+        DataFrame đầu vào chứa dữ liệu thô, bao gồm các cột:
+        - "Loại hình đất"
+        - "Pháp lý"
+        - "Nội thất"
+        - "Hướng nhà"
+        - "Hướng ban công
+
+    :return :
+    ---------------
+    DataFrame
+        Bảng dim_property với các cột:
+        - property_id : int
+          Khóa chính (surrogate key)
+        - property_type : str
+        - legal_status :  str
+        - interior     :  str
+        - house_direction : str
+        - balcony_direction : str
+
+    """
+    dim = (
+        data[
+            [
+                "Loại hình đất",
+                "Pháp lý",
+                "Nội thất",
+                "Hướng nhà",
+                "Hướng ban công"
+            ]
+        ]
+        .rename(columns={
+            "Loại hình đất": "property_type",
+            "Pháp lý": "legal_status",
+            "Nội thất": "interior",
+            "Hướng nhà": "house_direction",
+            "Hướng ban công": "balcony_direction"
+        })
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+    dim["property_id"] = dim.index + 1
+    return dim
+def build_dim_time(data : DataFrame) -> DataFrame:
+    """
+        Xây dựng bảng dimension thời gian (dim_time) từ dữ liệu thô.
+
+        Mục đích:
+        - Chuẩn hóa thông tin thời gian từ các mốc ngày khác nhau
+          (ngày đăng tin và ngày crawl dữ liệu)
+        - Loại bỏ các bản ghi trùng lặp
+        - Tạo khóa thay thế (surrogate key) cho bảng dim_time
+        - Phục vụ phân tích xu hướng và mô hình hóa theo thời gian
+
+        :param data :
+        ----------
+        data : DataFrame
+            DataFrame đầu vào chứa dữ liệu thô, bao gồm các cột:
+            - "Ngày đăng"   : ngày tin đăng được tạo
+            - "crawl_date"  : ngày hệ thống thu thập dữ liệu
+
+        :return :
+        ---------------
+        DataFrame
+            Bảng dim_time với các cột:
+            - time_id : int
+                Khóa chính (surrogate key) cho mỗi mốc thời gian
+            - posted_date : datetime
+                Ngày đăng tin bất động sản
+            - crawl_date : datetime
+                Ngày crawl dữ liệu
+            - day : int
+                Ngày trong tháng (1–31)
+            - month : int
+                Tháng trong năm (1–12)
+            - year : int
+                Năm
+    """
+
+    dim = (
+        data[["Ngày đăng", "crawl_date"]]
+        .rename(columns={"Ngày đăng": "posted_date"})
+        .drop_duplicates()
+        .reset_index(drop=True)
+    )
+
+    dim["posted_date"] = pd.to_datetime(dim["posted_date"], errors="coerce")
+    dim["crawl_date"] = pd.to_datetime(dim["crawl_date"], errors="coerce")
+
+    dim["day"] = dim["posted_date"].dt.day
+    dim["month"] = dim["posted_date"].dt.month
+    dim["year"] = dim["posted_date"].dt.year
+
+    dim["time_id"] = dim.index + 1
+    return dim
+def build_fact_real_estate(data , dim_location , dim_property , dim_time):
+    """
+        Xây dựng bảng fact_real_estate (bảng fact trung tâm) từ dữ liệu thô
+        bằng cách liên kết với các bảng dimension.
+
+        Mục đích:
+        - Chuẩn hóa dữ liệu thô sang schema Data Warehouse
+        - Ánh xạ các thuộc tính phân loại sang khóa ngoại (FK)
+        - Chuẩn bị dữ liệu cho phân tích và huấn luyện mô hình học máy
+
+        :param data :
+        ----------
+        data : DataFrame
+            Dữ liệu thô thu thập từ crawler, chứa thông tin chi tiết tin đăng BĐS
+
+        dim_location : DataFrame
+            Bảng dimension vị trí (dim_location), chứa:
+            - location_id
+            - city
+            - district
+
+        dim_property : DataFrame
+            Bảng dimension thuộc tính BĐS (dim_property), chứa:
+            - property_id
+            - property_type
+            - legal_status
+            - interior
+            - house_direction
+            - balcony_direction
+
+        dim_time : DataFrame
+            Bảng dimension thời gian (dim_time), chứa:
+            - time_id
+            - posted_date
+            - crawl_date
+
+    :return :
+        ---------------
+        DataFrame
+            Bảng fact_real_estate với các cột:
+            - location_id (FK)
+            - property_id (FK)
+            - time_id (FK)
+            - transaction_type
+            - price
+            - price_unit
+            - area
+            - bedrooms
+            - bathrooms
+            - floors
+            - frontage
+            - road_width
+    """
+    df_fact = data.rename(columns={
+        "Loại giao dịch": "transaction_type",
+        "Giá": "price",
+        "Đơn vị(Mức giá)": "price_unit",
+        "Diện tích": "area",
+        "Số phòng ngủ": "bedrooms",
+        "Số phòng tắm, vệ sinh": "bathrooms",
+        "Số tầng": "floors",
+        "Mặt tiền": "frontage",
+        "Đường vào": "road_width",
+        "Thành phố": "city",
+        "Quận/huyện": "district",
+        "Loại hình đất": "property_type",
+        "Pháp lý": "legal_status",
+        "Nội thất": "interior",
+        "Hướng nhà": "house_direction",
+        "Hướng ban công": "balcony_direction",
+        "Ngày đăng": "posted_date"
+    })
+
+    df_fact = (
+        df_fact
+        .merge(dim_location, on=["city", "district"], how="left")
+        .merge(dim_property, on=[
+            "property_type",
+            "legal_status",
+            "interior",
+            "house_direction",
+            "balcony_direction"
+        ], how="left")
+        .merge(dim_time, on=["posted_date", "crawl_date"], how="left")
+    )
+
+    fact = df_fact[
+        [
+            "location_id",
+            "property_id",
+            "time_id",
+            "transaction_type",
+            "price",
+            "price_unit",
+            "area",
+            "bedrooms",
+            "bathrooms",
+            "floors",
+            "frontage",
+            "road_width"
+        ]
+    ]
+
+    return fact
+
+
+# hàm lưu dữ liệu sau khi xử lý
+def save_processed_data(dim_location, dim_property, dim_time, fact):
+    """
+    Lưu các bảng dimension và fact sau khi xử lý vào thư mục processed.
+
+    Mục đích:
+    - Ghi kết quả của bước Transform (ETL) ra file CSV
+    - Chuẩn hóa đầu ra cho các bước phân tích, trực quan hóa
+      và huấn luyện mô hình học máy
+    - Đảm bảo dữ liệu đã được tách theo mô hình Star Schema
+
+    Tham số:
+    ----------
+    dim_location : DataFrame
+        Bảng dimension vị trí địa lý (dim_location)
+
+    dim_property : DataFrame
+        Bảng dimension thuộc tính bất động sản (dim_property)
+
+    dim_time : DataFrame
+        Bảng dimension thời gian (dim_time)
+
+    fact : DataFrame
+        Bảng fact trung tâm (fact_real_estate)
+    """
+    os.makedirs(PROCESSED_PATH, exist_ok=True)
+
+    dim_location.to_csv(
+        f"{PROCESSED_PATH}/dim_location.csv", index=False
+    )
+    dim_property.to_csv(
+        f"{PROCESSED_PATH}/dim_property.csv", index=False
+    )
+    dim_time.to_csv(
+        f"{PROCESSED_PATH}/dim_time.csv", index=False
+    )
+    fact.to_csv(
+        f"{PROCESSED_PATH}/fact_real_estate.csv", index=False
+    )
+
+    logger.info("Processed data saved successfully")
 
 # hàm transfomer dữ liệu
 
 def transformer(data: DataFrame) -> DataFrame:
     logger.info("Start transformer data ...")
     logger.info(f"Initial shape: {data.shape}")
-
+    k = len(data )
+    logger.info(f"số bản ghi trước khi xóa: {k}")
     try:
         data = loai_hinh_dat(data)
         data = dien_tich(data)
@@ -535,12 +742,29 @@ def transformer(data: DataFrame) -> DataFrame:
             ],
             keep="first"
         )
+        data = validate_price(data)
+        data = validate_area(data)
+        data = validate_location(data)
+        dim_location = build_dim_location(data )
+        dim_property = build_dim_property(data )
+        dim_time = build_dim_time(data)
+
+        fact = build_fact_real_estate(
+            data, dim_location, dim_property, dim_time
+        )
+
+        save_processed_data(
+            dim_location, dim_property, dim_time, fact
+        )
+
     except Exception as e:
         logger.exception(f"Transformer failed: {e}")
-
+    g = len(data)
+    logger.info(f"số bản ghi đã xóa: {k - g }")
+    logger.info(f"số bản ghi sau khi xóa: {g }")
     logger.info(f"Final shape: {data.shape}")
 
-    return data
+    return dim_location, dim_property, dim_time, fact
 
 
 

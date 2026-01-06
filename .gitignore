@@ -3,3 +3,5 @@ data_raw/gia_nha.csv
 data_clean.ipynb
 .idea
 urls.db
+data_processed
+config
