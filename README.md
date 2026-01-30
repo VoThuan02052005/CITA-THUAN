@@ -1,4 +1,5 @@
-# Real Estate Price Prediction Project
+# Building an end-to-end data pipeline for house price prediction in Vietnam
+
 
 ## Overview
 This project provides a comprehensive data engineering and machine learning pipeline for real estate price prediction. The solution encompasses automated data cleaning, validation, feature engineering, and a benchmark suite of models—from simple baseline metrics to custom multi-layer perceptrons (MLP). The objective is to provide a reproducible and modular framework for analyzing real estate trends and building predictive models for Springer-quality research and production environments.
@@ -100,7 +101,7 @@ mkdir -p data/processed
 kaggle datasets download -d thunvthun/house-price -p data/processed
 unzip data/processed/house-price.zip -d data/processed
 ```
-Use the following file directly: `data/processed/data_sau_clean.csv`
+Use the following file directly: `data/staging/data_sau_clean.csv`
 
 ### Model Training and Evaluation
 Once `data_sau_clean.csv` is available (from Option 1 or Option 2), run:
