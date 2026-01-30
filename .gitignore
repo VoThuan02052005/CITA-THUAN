@@ -1,7 +1,23 @@
-config.yaml
-data_raw/gia_nha.csv
-data_clean.ipynb
-.idea
+# OS independent files
+.DS_Store
+*.swp
+*.pyc
+__pycache__/
+
+# Data and Models
+data/raw/
+data/staging/
+data/processed/
+models/
+logs/
 urls.db
-data_processed
-config
+
+# Documentation
+.gemini/
+notebooks/figures/
+reports/figures/*.png
+
+# Local environment
+.venv/
+env/
+.env

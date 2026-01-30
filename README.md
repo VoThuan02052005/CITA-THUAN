@@ -1,150 +1,147 @@
-# 🏘️ Xây dựng pineline dữ liệu nhà đất phục vụ dự đoán giá nhà
+# Real Estate Price Prediction Project
 
-## 📌 Project Overview 
+## Overview
+This project provides a comprehensive data engineering and machine learning pipeline for real estate price prediction. The solution encompasses automated data cleaning, validation, feature engineering, and a benchmark suite of models—from simple baseline metrics to custom multi-layer perceptrons (MLP). The objective is to provide a reproducible and modular framework for analyzing real estate trends and building predictive models for Springer-quality research and production environments.
 
-Dự án này tập trung vào việc xây dựng quy trình Kỹ thuật dữ liệu từ đầu đến cuối cho dữ liệu bất động sản để hỗ trợ dự đoán giá nhà.
-
-Quy trình thu thập dữ liệu nhà ở thô từ các trang web bất động sản, xử lý và lưu trữ dữ liệu đó ở định dạng có cấu trúc, đồng thời chuẩn bị dữ liệu cho các mô hình học máy.
-
-Dự án này được thiết kế dành cho những người mới bắt đầu Kỹ thuật dữ liệu muốn thực hành làm việc với dữ liệu trong thế giới thực và hiểu cách các đường dẫn dữ liệu hỗ trợ phân tích dự đoán.
-
----- 
-
-## 🎯 Project Objectives 
-
-* Thu thập dữ liệu bất động sản từ các nguồn trực tuyến.
-* Làm sạch và xử lý dữ liệu thô , không có cấu trúc.
-* Lưu trữ dữ liệu đã xử lý trong cơ sở dữ liệu.
-* Chuẩn bị đặc trưng cho các mô hình dự đoán giá nhà.
-* Xây dựng các mô hình phục vụ bài tóa dự đoán giá.
-* xây dựng giao diện demo 
-
-----
-
-## 🌐 Data source 
-
-+) crawl dữ liệu từ trang web batdongsan.com.
-
-----
-
-## 🧱 Pineline Overview 
-
-```
-Web / API 
--> Ingest (Python)
--> Raw Data (CSV / JSON / raw tables)
--> Clean & Normalize (python)
--> Data warehouse (Postgres)
-
--> dbt (Analytics layer)
-   ├── fact_listings
-   ├── dim_location
-   ├── dim_time
-   └── fact_price_history
-
-→ Feature Engineering (Python)
-   ├── encode
-   ├── scale
-   ├── aggregate
-   └── feature store / dataset_ml
-
-→ Train ML Model
-→ Prediction / Evaluation
+## Project Structure
+```text
+.
+├── config.yaml             # Global configuration for crawling and processing
+├── data/
+│   ├── raw/                # Source CSV files (raw data)
+│   ├── staging/            # Cleaned and validated intermediate data
+│   └── processed/          # Dimension and fact tables for downstream analysis
+├── logs/                   # timestamped execution logs
+├── models/                 # Saved model artifacts (.joblib)
+├── notebooks/              # Jupyter notebooks for exploratory analysis
+├── reports/
+│   └── figures/            # High-resolution plots and visualizations
+├── run_pipeline_clean.py   # Entry point for data cleaning and validation
+├── src/
+│   ├── data/               # Modular data logic (clean, validate, etl)
+│   ├── features/           # Feature engineering and scaling
+│   ├── models/             # Model architectures and definitions
+│   ├── pipelines/          # Training and evaluation orchestration
+│   └── utils/              # Shared utilities (logging, metrics, io)
+├── README.md               # Project documentation
+└── requirements.txt        # Dependency list
 ```
 
----
+## Data / Input
+The primary input is a raw real estate dataset located at `data/raw/gia_nha.csv`. 
+- **Format**: CSV
+- **Content**: Vietnamese real estate listings including location, price, area, room counts, and property attributes.
+- **Acquisition**: The raw dataset can be downloaded from [Kaggle: House Price Dataset](https://www.kaggle.com/datasets/thunvthun/house-price/data). Alternatively, the project includes an automated extraction module in `src/data/etl/extract.py`.
 
-## 🔄 Data Pipeline Architecture
+## Workflow / Pipeline
+1. **Extraction**: Collect raw listing data from real estate portals.
+2. **Preprocessing**: Execute `run_pipeline_clean.py` to perform:
+   - Type conversion and normalization.
+   - Outlier removal and duplicate filtering.
+   - Validation against predefined schemas.
+3. **Feature Engineering**: Automated generation of time-based features, categorical encoding, and numerical scaling.
+4. **Training**: Orchestrate training across different model families (Linear, Tree, MLP) via scripts in `src/pipelines/`.
+5. **Evaluation**: Generate comparative metrics (MAE, RMSE, R2) and diagnostic plots.
 
-Quy trình này bao gồm các giai đoạn sau: 
+## How to Run
+### Environment Requirements
+- Python 3.10+
+- Recommended: Virtual environment (venv or conda)
+- Kaggle API
 
-1. **Data Ingestion**
-
-   * thu thập dữ liệu giá nhà bằng Selenium & BeautifulSoup
-   * trích xuất các thuộc tính như:
-
-     * Location
-     * Area (m²)
-     * Number of bedrooms
-     * Price
-     * Property type
-
-2. **Data Cleaning & Validation**
-
-   * Xóa dữ liệu trùng lặp.
-   * xử lý các giá trị bị thiếu hoặc không hợp lệ.
-   * Chuẩn hóa đơn vị giá cả và diện tích.
-
-3. **Data Storage**
-
-   * Lưu trữ dữ liệu đã làm sạch vào các tệp CSV và cơ sở dữ liệu SQLite.
-   * Đảm bảo tính nhất quán của dữ liệu để phục vụ cho việc phân tích tiếp theo.
-
-4. **Feature Engineering**
-
-   * Encode categorical variables (One-Hot Encoding)
-   * Normalize numerical features
-   * Generate feature vectors for ML models
-
-5. **Data Serving for ML**
-
-   * Export final dataset for training and evaluation
-   * Support house price prediction models
-
----
-
-## 🛠 Tech Stack
-
-* **Programming Language:** Python
-* **Web Scraping:** Selenium, BeautifulSoup
-* **Data Processing:** Pandas, NumPy
-* **Database:** SQLite
-* **Machine Learning:** Scikit-learn
-* **Visualization:** Matplotlib
-
----
-
-## 📂 Project Structure
-
+### Installation
+```bash
+git clone https://github.com/your-username/project_price.git
+cd project_price
+pip install -r requirements.txt
 ```
-real-estate-data-pipeline/
-│── data_raw/
-│   ├── raw/       
-│   ├── cleaned/       
-│
-│── etl/
-│   ├── extract.py 
-│   ├── transfomer.py 
-│   ├── load.py 
-│
-│── data_processed/
-│   ├── clean_data.py
-│   ├── feature_engineering.py
-│
-│── warehouse 
-│   ├── database.db
-│
-│── ml/
-│   ├── train_model.py
-│
-│── main.py                # Run full pipeline
-│── requirements.txt
-│── README.md
+
+## Download Raw Dataset
+The raw housing price dataset is publicly available on Kaggle.
+
+**Dataset Link**: [House Price Dataset](https://www.kaggle.com/datasets/thunvthun/house-price/data)
+
+To download the dataset programmatically, please follow these steps:
+
+### Dataset Download
+#### Kaggle API Setup
+```bash
+pip install kaggle
 ```
------
-## Data Quality 
 
-* Để đảm bảo dữ liệu đầu vào đáng tin cậy cho việc dự đoán giá, các quy tắc chất lượng dữ liệu sau được áp dụng:
-* Giá nhà phải lớn hơn 0. 
-* Diện tích phải lớn hơn 0.
-* Giá trị vị trí (Quận/huyện , thành phố ) phải khác NULL. 
-* Các giá trị cột ngày thắng có type là datetime64 và ko có giá trị lớn hon ngày hiện tại . 
-* Xóa các giá trị trùng lặp.
-* Xóa các giá trị trùng lặp theo cột. 
+1. Go to Kaggle -> Account -> API -> Create New Token
+2. Download `kaggle.json`
+3. Move it to: `~/.kaggle/kaggle.json`
+4. Set permissions:
+```bash
+chmod 600 ~/.kaggle/kaggle.json
+```
 
-------
+#### Option 1: Use Raw Data and Run Cleaning Pipeline
+This option reproduces the full data preprocessing workflow.
+```bash
+mkdir -p data/raw
+kaggle datasets download -d thunvthun/house-price -p data/raw
+unzip data/raw/house-price.zip -d data/raw
+```
+Expected file: `data/raw/gia_nha.csv`
 
+Run the cleaning pipeline:
+```bash
+export PYTHONPATH=$PYTHONPATH:.
+python3 run_pipeline_clean.py
+```
+Output: `data/processed/data_sau_clean.csv`
 
+#### Option 2: Use Cleaned Data Directly (Skip Cleaning)
+This option is recommended if you only want to reproduce training and evaluation results.
+```bash
+mkdir -p data/processed
+kaggle datasets download -d thunvthun/house-price -p data/processed
+unzip data/processed/house-price.zip -d data/processed
+```
+Use the following file directly: `data/processed/data_sau_clean.csv`
 
+### Model Training and Evaluation
+Once `data_sau_clean.csv` is available (from Option 1 or Option 2), run:
 
+```bash
+export PYTHONPATH=$PYTHONPATH:.
 
+# Baseline model
+python3 src/pipelines/train_baseline.py
+
+# Linear regression models
+python3 src/pipelines/train_linear.py
+
+# Tree-based models
+python3 src/pipelines/train_tree.py
+
+# Custom MLP model
+python3 src/pipelines/train_mlp.py
+```
+
+## Configuration
+Major parameters are managed in `config.yaml`:
+- **CRAWL**: Paging, batch size, and sleep intervals for web scraping.
+- **File Paths**: Global paths for raw data and database objects.
+- **Model Params**: Hyperparameters for the Custom MLP can be found in `src/config/default.yaml`.
+
+## Output / Results
+- **Models**: Serialized files in `models/` (e.g., `mlp_model.joblib`).
+- **Reports**: Statistical plots and performance figures in `reports/figures/`.
+- **Data**: Final processed dataset in `data/processed/data_sau_clean.csv`.
+
+## Logging & Reproducibility
+- **Logging**: The project uses the standard Python `logging` module. Console outputs provide real-time counts of processed vs. dropped records. Logs are also persisted in the `logs/` directory.
+- **Reproducibility**:
+  - Seeds are fixed for train/test splits.
+  - Transformation logic is versioned within `src/data/clean/`.
+  - The pipeline architecture ensures that starting from the same `data/raw/` file will always yield identical metrics.
+
+## Notes / Limitations
+- Web scraping modules require a compatible Chrome driver and local browser profile.
+- The `CustomMLP` implementation is a pure NumPy/Standard-lib approach for research transparency; for large-scale production, a framework like PyTorch/TensorFlow is recommended.
+
+## License
+MIT License
