@@ -1,0 +1,12 @@
+[2026-01-31 02:51:21] [train_mlp] [INFO] Starting MLP training pipeline
+[2026-01-31 02:51:21] [train_mlp] [INFO] Loading data from data/staging/data_sau_clean.csv
+[2026-01-31 02:51:21] [train_mlp] [INFO] Building features
+[2026-01-31 02:51:22] [train_mlp] [INFO] Splitting training data for validation
+[2026-01-31 02:51:22] [train_mlp] [INFO] Initializing CustomMLP
+[2026-01-31 02:51:22] [train_mlp] [INFO] Training CustomMLP model
+[2026-01-31 02:56:47] [train_mlp] [INFO] Evaluating CustomMLP
+[2026-01-31 02:56:48] [train_mlp] [INFO] [TRAIN] {'MAE': 0.23144343618183325, 'RMSE': np.float64(0.3560239352702701), 'R2': 0.8713363612913607}
+[2026-01-31 02:56:48] [train_mlp] [INFO] [VAL]   {'MAE': 0.265562413626017, 'RMSE': np.float64(0.5039684080057207), 'R2': 0.7602554974626115}
+[2026-01-31 02:56:48] [train_mlp] [INFO] [TEST]  {'MAE': 0.2601379240822454, 'RMSE': np.float64(0.4531790574683053), 'R2': 0.7937991026245401}
+[2026-01-31 02:56:48] [train_mlp] [INFO] Training time: 324.24s
+[2026-01-31 02:56:48] [train_mlp] [SUCCESS] MLP model saved to models/mlp_model.joblib

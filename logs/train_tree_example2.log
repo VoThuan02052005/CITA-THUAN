@@ -1,0 +1,15 @@
+[2026-01-31 02:46:46] [train_tree] [INFO] Starting tree models training pipeline
+[2026-01-31 02:46:46] [train_tree] [INFO] Loading data from data/staging/data_sau_clean.csv
+[2026-01-31 02:46:46] [train_tree] [INFO] Building features
+[2026-01-31 02:46:48] [train_tree] [INFO] Training DecisionTree model
+[2026-01-31 02:46:50] [train_tree] [INFO] Evaluating DecisionTree
+[2026-01-31 02:46:50] [train_tree] [INFO] DecisionTree Results: {'MAE': 0.3599522511785171, 'RMSE': np.float64(0.5799992559084374), 'R2': 0.6622419099535878, 'train_time': 2.298823595046997}
+[2026-01-31 02:46:50] [train_tree] [SUCCESS] DecisionTree model saved to models/tree_decisiontree_model.joblib
+[2026-01-31 02:46:50] [train_tree] [INFO] Training RandomForest model
+[2026-01-31 02:49:00] [train_tree] [INFO] Evaluating RandomForest
+[2026-01-31 02:49:01] [train_tree] [INFO] RandomForest Results: {'MAE': 0.2954275497320167, 'RMSE': np.float64(0.4988361509499091), 'R2': 0.7501572644517971, 'train_time': 130.5267732143402}
+[2026-01-31 02:49:01] [train_tree] [SUCCESS] RandomForest model saved to models/tree_randomforest_model.joblib
+[2026-01-31 02:49:01] [train_tree] [INFO] Training GradientBoosting model
+[2026-01-31 02:51:19] [train_tree] [INFO] Evaluating GradientBoosting
+[2026-01-31 02:51:19] [train_tree] [INFO] GradientBoosting Results: {'MAE': 0.3714437452208291, 'RMSE': np.float64(0.574688134015716), 'R2': 0.6683993696681292, 'train_time': 137.47018814086914}
+[2026-01-31 02:51:19] [train_tree] [SUCCESS] GradientBoosting model saved to models/tree_gradientboosting_model.joblib

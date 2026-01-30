@@ -1,0 +1,6 @@
+[2026-01-31 02:13:06] [transform] [INFO] Start transformer data ...
+[2026-01-31 02:13:06] [transform] [INFO] Initial shape: (153638, 17)
+[2026-01-31 02:13:06] [transform] [INFO] số bản ghi trước khi xóa: 153638
+[2026-01-31 02:13:10] [transform] [INFO] số bản ghi đã xóa: 21667
+[2026-01-31 02:13:10] [transform] [INFO] số bản ghi sau khi xóa: 131971
+[2026-01-31 02:13:10] [transform] [INFO] Final shape: (131971, 19)

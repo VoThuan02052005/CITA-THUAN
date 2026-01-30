@@ -9,13 +9,12 @@ data/raw/
 data/staging/
 data/processed/
 models/
-logs/
 urls.db
 
 # Documentation
 .gemini/
 notebooks/figures/
-reports/figures/*.png
+
 
 # Local environment
 .venv/
