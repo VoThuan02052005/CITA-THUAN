@@ -59,8 +59,7 @@ pip install -r requirements.txt
 ## Download Raw Dataset
 The raw housing price dataset is publicly available on Kaggle.
 
-**Dataset Link**: [House Price Dataset](https://www.kaggle.com/datasets/thunvthun/house-price/data)
-
+**Dataset Link**: [https://www.kaggle.com/datasets/thunvthun/house-price/data]
 To download the dataset programmatically, please follow these steps:
 
 ### Dataset Download
@@ -91,14 +90,14 @@ Run the cleaning pipeline:
 export PYTHONPATH=$PYTHONPATH:.
 python3 run_pipeline_clean.py
 ```
-Output: `data/processed/data_sau_clean.csv`
+Output: `data/staging/data_sau_clean.csv`
 
 #### Option 2: Use Cleaned Data Directly (Skip Cleaning)
 This option is recommended if you only want to reproduce training and evaluation results.
 ```bash
 
-kaggle datasets download -d thunvthun/house-price -p data/processed
-unzip data/processed/house-price.zip -d data/processed
+kaggle datasets download -d thunvthun/house-price -p data/staging
+unzip data/staging/house-price.zip -d data/staging
 ```
 Use the following file directly: `data/staging/data_sau_clean.csv`
 
@@ -130,7 +129,7 @@ Major parameters are managed in `config.yaml`:
 ## Output / Results
 - **Models**: Serialized files in `models/` (e.g., `mlp_model.joblib`).
 - **Reports**: Statistical plots and performance figures in `reports/figures/`.
-- **Data**: Final processed dataset in `data/processed/data_sau_clean.csv`.
+- **Data**: Final processed dataset in `data/staging/data_sau_clean.csv`.
 
 ## Logging & Reproducibility
 - **Logging**: The project uses the standard Python `logging` module. Console outputs provide real-time counts of processed vs. dropped records. Logs are also persisted in the `logs/` directory.
