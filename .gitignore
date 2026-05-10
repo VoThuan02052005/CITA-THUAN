@@ -4,17 +4,23 @@
 *.pyc
 __pycache__/
 
+# IDE
+.idea/
+
 # Data and Models
 data/raw/
 data/staging/
 data/processed/
 models/
 urls.db
+catboost_info/
 
 # Documentation
 .gemini/
 notebooks/figures/
 
+# Logs
+logs/
 
 # Local environment
 .venv/

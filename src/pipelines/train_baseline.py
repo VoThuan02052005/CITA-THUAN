@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 import time
 from src.features.build_feature import build_features
-from src.models.baseline import MeanBaseline
+from src.model.baseline import MeanBaseline
 from src.utils.metrics import evaluate_regression
 from src.utils.logger import Logger
 
@@ -46,5 +46,5 @@ def train_baseline(data_path):
     return metrics
 
 if __name__ == "__main__":
-    DATA_PATH = "data/processed/data_sau_clean.csv"
+    DATA_PATH = "data/staging/data_sau_clean.csv"
     train_baseline(DATA_PATH)

@@ -43,3 +43,8 @@ class Logger:
     def success(self, msg: str):
         """Thêm level SUCCESS để đánh dấu khi train xong hoặc lưu model xong"""
         self._write("SUCCESS", msg)
+
+    def exception(self, msg: str):
+        """Ghi log level ERROR kèm thông tin exception"""
+        import traceback
+        self._write("ERROR", f"{msg}\n{traceback.format_exc()}")

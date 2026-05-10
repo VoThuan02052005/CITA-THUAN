@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 import time
 from src.features.build_feature import build_features
-from src.models.tree import build_tree_models
+from src.model.tree import build_tree_models
 from src.utils.metrics import evaluate_regression
 from src.utils.logger import Logger
 
@@ -49,5 +49,5 @@ def train_tree(data_path):
     return results
 
 if __name__ == "__main__":
-    DATA_PATH = "data/processed/data_sau_clean.csv"
+    DATA_PATH = "data/staging/data_sau_clean.csv"
     train_tree(DATA_PATH)

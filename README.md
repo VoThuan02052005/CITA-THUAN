@@ -11,7 +11,6 @@ This project provides a comprehensive data engineering and machine learning pipe
 ├── data/
 │   ├── raw/                # Source CSV files (raw data)
 │   ├── staging/            # Cleaned and validated intermediate data
-│   └── processed/          # Dimension and fact tables for downstream analysis
 ├── logs/                   # timestamped execution logs
 ├── models/                 # Saved model artifacts (.joblib)
 ├── notebooks/              # Jupyter notebooks for exploratory analysis
@@ -32,7 +31,7 @@ This project provides a comprehensive data engineering and machine learning pipe
 The primary input is a raw real estate dataset located at `data/raw/gia_nha.csv`. 
 - **Format**: CSV
 - **Content**: Vietnamese real estate listings including location, price, area, room counts, and property attributes.
-- **Acquisition**: The raw dataset can be downloaded from [Kaggle: House Price Dataset](https://www.kaggle.com/datasets/thunvthun/house-price/data). Alternatively, the project includes an automated extraction module in `src/data/etl/extract.py`.
+- **Acquisition**: The raw dataset can be downloaded from [https://www.kaggle.com/datasets/thunvthun/house-price/data]. Alternatively, the project includes an automated extraction module in `src/data/etl/extract.py`.
 
 ## Workflow / Pipeline
 1. **Extraction**: Collect raw listing data from real estate portals.
@@ -97,7 +96,7 @@ Output: `data/processed/data_sau_clean.csv`
 #### Option 2: Use Cleaned Data Directly (Skip Cleaning)
 This option is recommended if you only want to reproduce training and evaluation results.
 ```bash
-mkdir -p data/processed
+
 kaggle datasets download -d thunvthun/house-price -p data/processed
 unzip data/processed/house-price.zip -d data/processed
 ```

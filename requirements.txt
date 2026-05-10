@@ -6,5 +6,7 @@ PyYAML
 scikit-learn
 selenium
 webdriver-manager
-tensorflow
 joblib
+xgboost
+lightgbm
+catboost

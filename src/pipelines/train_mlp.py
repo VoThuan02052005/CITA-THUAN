@@ -1,68 +1,3 @@
-# import os
-# import joblib
-# import pandas as pd
-# import numpy as np
-# import time
-# from sklearn.model_selection import train_test_split
-# from src.features.build_feature import build_features
-# from src.models.custom_mlp import build_custom_mlp
-# from src.utils.metrics import evaluate_regression
-# from src.utils.logger import Logger
-
-# logger = Logger("train_mlp")
-
-# def train_mlp(data_path):
-#     logger.info("Starting MLP training pipeline")
-    
-#     # Load data
-#     logger.info(f"Loading data from {data_path}")
-#     data = pd.read_csv(data_path)
-    
-#     # Feature engineering
-#     logger.info("Building features")
-#     features = build_features(data)
-#     X_train, X_test = features["X_train"], features["X_test"]
-#     y_train, y_test = features["y_train"], features["y_test"]
-    
-#     # Split TRAIN into TRAIN + VAL (as done in mlp.ipynb)
-#     logger.info("Splitting training data for validation")
-#     X_train, X_val, y_train, y_val = train_test_split(
-#         X_train, y_train, test_size=0.2, random_state=42, shuffle=True
-#     )
-    
-#     # Ensure numpy arrays and correct shapes
-#     X_train, y_train = np.asarray(X_train), np.asarray(y_train).reshape(-1, 1)
-#     X_val, y_val = np.asarray(X_val), np.asarray(y_val).reshape(-1, 1)
-#     X_test, y_test = np.asarray(X_test), np.asarray(y_test).reshape(-1, 1)
-    
-#     # Training
-#     logger.info("Initializing CustomMLP")
-#     model = build_custom_mlp(X_train.shape[1])
-    
-#     logger.info("Training CustomMLP model")
-#     start_time = time.time()
-#     model.fit(X_train, y_train, X_val, y_val)
-#     train_time = time.time() - start_time
-    
-#     # Evaluation
-#     logger.info("Evaluating CustomMLP")
-#     y_pred = model.predict(X_test)
-#     metrics = evaluate_regression(y_test, y_pred)
-#     metrics["train_time"] = train_time
-    
-#     logger.info(f"MLP Results: {metrics}")
-    
-#     # Save model
-#     os.makedirs("models", exist_ok=True)
-#     model_path = "models/mlp_model.joblib"
-#     joblib.dump(model, model_path)
-#     logger.success(f"MLP model saved to {model_path}")
-    
-#     return metrics
-
-# if __name__ == "__main__":
-#     DATA_PATH = "data/processed/data_sau_clean.csv"
-#     train_mlp(DATA_PATH)
 import os
 import joblib
 import pandas as pd
@@ -71,7 +6,7 @@ import time
 from sklearn.model_selection import train_test_split
 
 from src.features.build_feature import build_features
-from src.models.custom_mlp import build_custom_mlp
+from src.model.custom_mlp import build_custom_mlp
 from src.utils.metrics import evaluate_regression
 from src.utils.logger import Logger
 
@@ -174,5 +109,5 @@ def train_mlp(data_path):
 
 
 if __name__ == "__main__":
-    DATA_PATH = "data/processed/data_sau_clean.csv"
+    DATA_PATH = "data/staging/data_sau_clean.csv"
     train_mlp(DATA_PATH)

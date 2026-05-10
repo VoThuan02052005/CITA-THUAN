@@ -3,7 +3,7 @@ PROFILE_DIR: "profile-directory=Default"
 CSV_FILE: "gia_nha.csv"
 HOST : "localhost"
 USER : "root"
-PASSWORD : "thuan@02052005"
+PASSWORD : "${DB_PASSWORD}"
 DATABASE : "gia_nha"
 
 CRAWL:

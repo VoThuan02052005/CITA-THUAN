@@ -38,7 +38,7 @@ if __name__ == "__main__":
     logger.info(f"Sau khi kiểm định: còn {final_count} dòng (Đã loại bỏ thêm: {removed_validate} dòng)")
 
     # 4. Lưu kết quả
-    output_path = "data/processed/data_sau_clean.csv"
+    output_path = "data/staging/data_sau_clean.csv"
     save_csv(data, output_path)
     
     total_removed = initial_count - final_count
